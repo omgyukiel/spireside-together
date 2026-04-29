@@ -4,7 +4,9 @@ Spireside Together is a Slay the Spire 2 mod that enables public co-op lobbies w
 
 ## Project State
 
-This repository currently contains the initial mod scaffold. Public lobby behavior is not implemented yet but updates will be posted here. Exploratory work needs to be done to investgate patching the logic that handles the Steam API for lobbies. At minimum I'd like to enable public lobbies with invites by code/uri.
+This repository currently contains the initial mod scaffold. Public lobby behavior is not implemented yet but updates will be posted here.
+
+Exploratory work needs to be done to investgate patching the logic that handles the Steam API for lobbies. At minimum I'd like to enable public lobbies with invites by code/uri.
 
 ## Install
 
