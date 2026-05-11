@@ -15,7 +15,27 @@ public partial class MainFile : Node
     public static void Initialize()
     {
         Harmony harmony = new(ModId);
-
         harmony.PatchAll();
+        Logger.Info("Initialized SpiresideTogether");
+        HarmonyProbeTarget();
+    }
+    
+    public static void HarmonyProbeTarget()
+    {
+        Logger.Info("harmony probe target original method ran");
+    }
+}
+
+[HarmonyPatch(typeof(MainFile), nameof(MainFile.HarmonyProbeTarget))]
+public static class HarmonyProbeTargetPatch
+{
+    public static void Prefix()
+    {
+        MainFile.Logger.Info("Harmony probe prefix ran");
+    }
+    
+    public static void Postfix()
+    {
+        MainFile.Logger.Info("Harmony probe postfix ran");
     }
 }
