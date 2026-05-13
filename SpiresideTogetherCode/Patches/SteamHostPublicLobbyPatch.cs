@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Transport.Steam;
+using SpiresideTogether.SpiresideTogetherCode;
 using Steamworks;
 using System.Threading.Tasks;
 
@@ -29,8 +30,15 @@ public class SteamHostPublicLobbyPatch
         // null result means successful lobby completion, so return if result has value
         if (result.HasValue || !host.LobbyId.HasValue) return result;
         MainFile.Logger.Info($"Steam lobby id is {host.GetRawLobbyIdentifier()}");
+        string gameVersion = GameCompatibilityMetadata.CurrentGameVersion;
         SteamMatchmaking.SetLobbyType(host.LobbyId.Value, ELobbyType.k_ELobbyTypePublic);
-        MainFile.Logger.Info("Steam lobby set to public");
+        SteamMatchmaking.SetLobbyData(host.LobbyId.Value, "spireside_together", "1");
+        SteamMatchmaking.SetLobbyData(host.LobbyId.Value, "name", $"Spireside Together {host.GetRawLobbyIdentifier()}");
+        SteamMatchmaking.SetLobbyData(
+            host.LobbyId.Value,
+            GameCompatibilityMetadata.LobbyGameVersionKey,
+            gameVersion);
+        MainFile.Logger.Info($"Steam lobby set to public with game version metadata {gameVersion}.");
 
         return result;
     }

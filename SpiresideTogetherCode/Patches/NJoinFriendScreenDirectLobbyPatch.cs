@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using SpiresideTogether.SpiresideTogetherCode;
 
 namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 
@@ -12,18 +13,26 @@ namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 public static class NJoinFriendScreenDirectLobbyPatch
 {
     private const string DirectJoinRootName = "SpiresideTogetherDirectJoin";
+    private const string BrowserRootName = "SpiresideTogetherLobbyBrowser";
 
     private static void Postfix(NJoinFriendScreen __instance)
     {
         Node screenNode = __instance;
 
-        if (screenNode.GetNodeOrNull<Node>(DirectJoinRootName) != null)
+        if (screenNode.GetNodeOrNull<Node>(DirectJoinRootName) == null)
         {
-            return;
+            Control directJoinRoot = CreateDirectJoinPanel(__instance);
+            screenNode.AddChild(directJoinRoot);
         }
 
-        Control directJoinRoot = CreateDirectJoinPanel(__instance);
-        screenNode.AddChild(directJoinRoot);
+        if (screenNode.GetNodeOrNull<Node>(BrowserRootName) == null)
+        {
+            Control browser = SteamLobbyBrowserPanel.Create(
+                BrowserRootName,
+                "Public Steam Lobbies",
+                lobbyId => JoinLobby(__instance, lobbyId.ToString()));
+            screenNode.AddChild(browser);
+        }
 
         MainFile.Logger.Info("Added direct Steam lobby ID join panel to Join Friends screen.");
     }
