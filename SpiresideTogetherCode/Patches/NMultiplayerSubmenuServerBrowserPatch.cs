@@ -1,8 +1,6 @@
 using System;
 using Godot;
 using HarmonyLib;
-using MegaCrit.Sts2.addons.mega_text;
-using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using SpiresideTogether.SpiresideTogetherCode;
 
@@ -12,74 +10,47 @@ namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 public static class NMultiplayerSubmenuServerBrowserPatch
 {
     private const string ButtonName = "SpiresideTogetherServerBrowserButton";
-    // Godot duplicate flag 4 copies scripts but not signal connections.
-    private const int DuplicateScriptsOnly = 4;
 
     private static void Postfix(NMultiplayerSubmenu __instance)
     {
         Node submenuNode = __instance;
 
-        Node? buttonContainer = submenuNode.GetNodeOrNull<Node>("ButtonContainer");
-        if (submenuNode.GetNodeOrNull<Node>(ButtonName) != null ||
-            buttonContainer?.GetNodeOrNull<Node>(ButtonName) != null)
+        if (submenuNode.GetNodeOrNull<Node>(ButtonName) != null)
         {
             return;
         }
 
         Control serverBrowserButton = CreateServerBrowserButton(submenuNode, __instance);
-
-        if (buttonContainer != null)
-        {
-            buttonContainer.AddChild(serverBrowserButton);
-        }
-        else
-        {
-            serverBrowserButton.AnchorLeft = 0.5f;
-            serverBrowserButton.AnchorRight = 0.5f;
-            serverBrowserButton.AnchorTop = 1.0f;
-            serverBrowserButton.AnchorBottom = 1.0f;
-            serverBrowserButton.OffsetLeft = -110.0f;
-            serverBrowserButton.OffsetRight = 110.0f;
-            serverBrowserButton.OffsetTop = -124.0f;
-            serverBrowserButton.OffsetBottom = -76.0f;
-            submenuNode.AddChild(serverBrowserButton);
-        }
+        serverBrowserButton.AnchorLeft = 1.0f;
+        serverBrowserButton.AnchorRight = 1.0f;
+        serverBrowserButton.AnchorTop = 1.0f;
+        serverBrowserButton.AnchorBottom = 1.0f;
+        serverBrowserButton.OffsetLeft = -172.0f;
+        serverBrowserButton.OffsetRight = -36.0f;
+        serverBrowserButton.OffsetTop = -92.0f;
+        serverBrowserButton.OffsetBottom = -48.0f;
+        submenuNode.AddChild(serverBrowserButton);
 
         MainFile.Logger.Info("Added Server Browser button to multiplayer submenu.");
     }
 
     private static Control CreateServerBrowserButton(Node submenuNode, NMultiplayerSubmenu submenu)
     {
-        NSubmenuButton? joinButton = submenuNode.GetNodeOrNull<NSubmenuButton>("ButtonContainer/JoinButton");
-        if (joinButton != null && joinButton.Duplicate(DuplicateScriptsOnly) is NSubmenuButton submenuButton)
-        {
-            submenuButton.Name = ButtonName;
-            submenuButton.GetNodeOrNull<MegaLabel>("%Title")?.SetTextAutoSize("Server Browser");
-            submenuButton.GetNodeOrNull<MegaRichTextLabel>("%Description")?.SetTextAutoSize("Browse public Steam lobbies.");
-
-            ((GodotObject)submenuButton).Connect(
-                NClickableControl.SignalName.Released,
-                Callable.From<NButton>((Action<NButton>)(_ => OpenServerBrowser(submenu))),
-                0u);
-
-            return submenuButton;
-        }
-
-        Button fallbackButton = new()
+        Button button = new()
         {
             Name = ButtonName,
-            Text = "Server Browser",
-            CustomMinimumSize = new Vector2(220, 48),
+            Text = "Browse",
+            CustomMinimumSize = new Vector2(136, 44),
             MouseFilter = Control.MouseFilterEnum.Stop,
             FocusMode = Control.FocusModeEnum.All
         };
 
-        ((GodotObject)fallbackButton).Connect(
+        ((GodotObject)button).Connect(
             Button.SignalName.Pressed,
             Callable.From((Action)(() => OpenServerBrowser(submenu))),
             0u);
 
-        return fallbackButton;
+        return button;
     }
 
     private static void OpenServerBrowser(NMultiplayerSubmenu submenu)
