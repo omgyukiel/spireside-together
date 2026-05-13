@@ -13,7 +13,6 @@ namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 public static class NJoinFriendScreenDirectLobbyPatch
 {
     private const string DirectJoinRootName = "SpiresideTogetherDirectJoin";
-    private const string BrowserRootName = "SpiresideTogetherLobbyBrowser";
 
     private static void Postfix(NJoinFriendScreen __instance)
     {
@@ -23,15 +22,6 @@ public static class NJoinFriendScreenDirectLobbyPatch
         {
             Control directJoinRoot = CreateDirectJoinPanel(__instance);
             screenNode.AddChild(directJoinRoot);
-        }
-
-        if (screenNode.GetNodeOrNull<Node>(BrowserRootName) == null)
-        {
-            Control browser = SteamLobbyBrowserPanel.Create(
-                BrowserRootName,
-                "Public Steam Lobbies",
-                lobbyId => JoinLobby(__instance, lobbyId.ToString()));
-            screenNode.AddChild(browser);
         }
 
         MainFile.Logger.Info("Added direct Steam lobby ID join panel to Join Friends screen.");

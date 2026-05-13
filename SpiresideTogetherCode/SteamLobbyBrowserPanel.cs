@@ -21,13 +21,7 @@ public sealed class SteamLobbyBrowserPanel
 
     public static Control Create(string name, string title, Action<ulong>? joinLobby)
     {
-        PanelContainer root = new()
-        {
-            Name = name,
-            MouseFilter = Control.MouseFilterEnum.Stop,
-            CustomMinimumSize = new Vector2(620, 310)
-        };
-
+        Control root = CreateEmbedded(name, title, joinLobby);
         root.AnchorLeft = 1.0f;
         root.AnchorRight = 1.0f;
         root.AnchorTop = 0.5f;
@@ -36,6 +30,20 @@ public sealed class SteamLobbyBrowserPanel
         root.OffsetRight = -40.0f;
         root.OffsetTop = -190.0f;
         root.OffsetBottom = 120.0f;
+
+        return root;
+    }
+
+    public static Control CreateEmbedded(string name, string title, Action<ulong>? joinLobby)
+    {
+        PanelContainer root = new()
+        {
+            Name = name,
+            MouseFilter = Control.MouseFilterEnum.Stop,
+            CustomMinimumSize = new Vector2(720, 460),
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ExpandFill
+        };
 
         MarginContainer margin = new()
         {
@@ -79,7 +87,7 @@ public sealed class SteamLobbyBrowserPanel
 
         ScrollContainer scroll = new()
         {
-            CustomMinimumSize = new Vector2(590, 210),
+            CustomMinimumSize = new Vector2(680, 330),
             SizeFlagsVertical = Control.SizeFlags.ExpandFill,
             MouseFilter = Control.MouseFilterEnum.Stop
         };
@@ -162,24 +170,36 @@ public sealed class SteamLobbyBrowserPanel
         HBoxContainer row = new()
         {
             MouseFilter = Control.MouseFilterEnum.Pass,
-            CustomMinimumSize = new Vector2(570, 42)
+            CustomMinimumSize = new Vector2(660, 42)
         };
 
-        string displayName = string.IsNullOrWhiteSpace(entry.Name) ? "(unnamed)" : entry.Name;
-        string localGameVersion = GameCompatibilityMetadata.CurrentGameVersion;
+        string displayName = Truncate(string.IsNullOrWhiteSpace(entry.Name) ? "(unnamed)" : entry.Name, 34);
         string gameVersion = string.IsNullOrWhiteSpace(entry.GameVersion) ? "unknown" : entry.GameVersion;
-        string versionLabel = gameVersion == localGameVersion
-            ? gameVersion
-            : $"{gameVersion} != local {localGameVersion}";
 
-        Label label = new()
+        Label nameLabel = new()
         {
-            Text = $"{displayName} | host v {versionLabel} | {entry.MemberCount}/{entry.MemberLimit} | {entry.LobbyId}",
+            Text = displayName,
             MouseFilter = Control.MouseFilterEnum.Ignore,
             SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
         };
 
-        row.AddChild(label);
+        Label versionLabel = new()
+        {
+            Text = gameVersion,
+            CustomMinimumSize = new Vector2(150, 36),
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+
+        Label playerCountLabel = new()
+        {
+            Text = $"{entry.MemberCount}/{entry.MemberLimit}",
+            CustomMinimumSize = new Vector2(72, 36),
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+
+        row.AddChild(nameLabel);
+        row.AddChild(versionLabel);
+        row.AddChild(playerCountLabel);
 
         if (_joinLobby != null)
         {
@@ -200,5 +220,15 @@ public sealed class SteamLobbyBrowserPanel
         }
 
         _list.AddChild(row);
+    }
+
+    private static string Truncate(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value[..(maxLength - 3)] + "...";
     }
 }
