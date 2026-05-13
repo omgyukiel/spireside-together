@@ -1,5 +1,9 @@
 .godot/
+decompiled/
+.tools/
 .dotnet/
+sts2.dll
+docs/
 bin/
 /android/
 .git/
