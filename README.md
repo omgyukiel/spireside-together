@@ -1,6 +1,6 @@
 # Spireside Together
 
-Spireside Together is a Slay the Spire 2 mod that enables public co-op lobbies without needing to be friends on Steam. Currently this project is in development and only supports enabling public lobbies. Version 1 with direct connection from clients is wip.
+Spireside Together is a Slay the Spire 2 mod that enables public co-op lobbies without needing to be friends on Steam. Currently this project is in development and only supports enabling public lobbies. Version 1 with server browers is wip. Currently you can install the mod and handle direct connections.
 
 ## Install
 
