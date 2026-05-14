@@ -16,6 +16,10 @@ public static class SteamLobbyBrowser
             return new List<SteamLobbyBrowserEntry>();
         }
 
+        SteamMatchmaking.AddRequestLobbyListStringFilter(
+            SteamLobbyMetadata.ModMarkerKey,
+            SteamLobbyMetadata.ModMarkerValue,
+            ELobbyComparison.k_ELobbyComparisonEqual);
         SteamMatchmaking.AddRequestLobbyListResultCountFilter(50);
 
         SteamAPICall_t call = SteamMatchmaking.RequestLobbyList();
@@ -27,8 +31,12 @@ public static class SteamLobbyBrowser
         {
             CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
             CSteamID ownerId = SteamMatchmaking.GetLobbyOwner(lobbyId);
-            string name = SteamMatchmaking.GetLobbyData(lobbyId, "name");
-            string gameVersion = SteamMatchmaking.GetLobbyData(lobbyId, GameCompatibilityMetadata.LobbyGameVersionKey);
+            string name = SteamLobbyMetadata.NormalizeHostName(
+                SteamMatchmaking.GetLobbyData(lobbyId, SteamLobbyMetadata.NameKey));
+            string description = SteamLobbyMetadata.NormalizeDescription(
+                SteamMatchmaking.GetLobbyData(lobbyId, SteamLobbyMetadata.DescriptionKey));
+            string gameVersion = SteamLobbyMetadata.NormalizeGameVersion(
+                SteamMatchmaking.GetLobbyData(lobbyId, SteamLobbyMetadata.GameVersionKey));
 
             entries.Add(new SteamLobbyBrowserEntry
             {
@@ -37,7 +45,9 @@ public static class SteamLobbyBrowser
                 MemberCount = SteamMatchmaking.GetNumLobbyMembers(lobbyId),
                 MemberLimit = SteamMatchmaking.GetLobbyMemberLimit(lobbyId),
                 Name = name,
-                GameVersion = gameVersion
+                Description = description,
+                GameVersion = gameVersion,
+                Ping = "?"
             });
         }
 

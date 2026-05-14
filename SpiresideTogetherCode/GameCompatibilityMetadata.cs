@@ -4,7 +4,7 @@ namespace SpiresideTogether.SpiresideTogetherCode;
 
 public static class GameCompatibilityMetadata
 {
-    public const string LobbyGameVersionKey = "sts2_game_version";
+    public const string LobbyGameVersionKey = SteamLobbyMetadata.GameVersionKey;
 
     public static string CurrentGameVersion =>
         ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? "UNKNOWN";

@@ -8,15 +8,28 @@ namespace SpiresideTogether.SpiresideTogetherCode;
 
 public sealed class SteamLobbyBrowserPanel
 {
+    private const int RowsPerPage = 8;
+
     private readonly Action<ulong>? _joinLobby;
     private readonly Label _statusLabel;
     private readonly VBoxContainer _list;
+    private readonly Button _previousPageButton;
+    private readonly Button _nextPageButton;
+    private IReadOnlyList<SteamLobbyBrowserEntry> _entries = Array.Empty<SteamLobbyBrowserEntry>();
+    private int _pageIndex;
 
-    private SteamLobbyBrowserPanel(Action<ulong>? joinLobby, Label statusLabel, VBoxContainer list)
+    private SteamLobbyBrowserPanel(
+        Action<ulong>? joinLobby,
+        Label statusLabel,
+        VBoxContainer list,
+        Button previousPageButton,
+        Button nextPageButton)
     {
         _joinLobby = joinLobby;
         _statusLabel = statusLabel;
         _list = list;
+        _previousPageButton = previousPageButton;
+        _nextPageButton = nextPageButton;
     }
 
     public static Control Create(string name, string title, Action<ulong>? joinLobby)
@@ -98,12 +111,56 @@ public sealed class SteamLobbyBrowserPanel
             SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
         };
 
-        SteamLobbyBrowserPanel panel = new(joinLobby, statusLabel, list);
+        HBoxContainer pagingRow = new()
+        {
+            MouseFilter = Control.MouseFilterEnum.Pass
+        };
+
+        Button previousPageButton = new()
+        {
+            Text = "<",
+            CustomMinimumSize = new Vector2(54, 36),
+            MouseFilter = Control.MouseFilterEnum.Stop,
+            FocusMode = Control.FocusModeEnum.All,
+            Disabled = true
+        };
+
+        Button nextPageButton = new()
+        {
+            Text = ">",
+            CustomMinimumSize = new Vector2(54, 36),
+            MouseFilter = Control.MouseFilterEnum.Stop,
+            FocusMode = Control.FocusModeEnum.All,
+            Disabled = true
+        };
+
+        Label pagingSpacer = new()
+        {
+            Text = "",
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+
+        SteamLobbyBrowserPanel panel = new(joinLobby, statusLabel, list, previousPageButton, nextPageButton);
 
         ((GodotObject)refreshButton).Connect(
             Button.SignalName.Pressed,
             Callable.From((Action)(() => TaskHelper.RunSafely(panel.Refresh()))),
             0u);
+
+        ((GodotObject)previousPageButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)panel.PreviousPage),
+            0u);
+
+        ((GodotObject)nextPageButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)panel.NextPage),
+            0u);
+
+        pagingRow.AddChild(pagingSpacer);
+        pagingRow.AddChild(previousPageButton);
+        pagingRow.AddChild(nextPageButton);
 
         header.AddChild(titleLabel);
         header.AddChild(refreshButton);
@@ -111,6 +168,7 @@ public sealed class SteamLobbyBrowserPanel
         column.AddChild(header);
         column.AddChild(statusLabel);
         column.AddChild(scroll);
+        column.AddChild(pagingRow);
         margin.AddChild(column);
         root.AddChild(margin);
 
@@ -134,18 +192,63 @@ public sealed class SteamLobbyBrowserPanel
             return;
         }
 
-        _statusLabel.Text = $"Found {entries.Count} Steam lobbies. Local version: {GameCompatibilityMetadata.CurrentGameVersion}.";
+        _entries = entries;
+        _pageIndex = 0;
 
         if (entries.Count == 0)
         {
+            _statusLabel.Text = $"Found 0 Steam lobbies. Local version: {GameCompatibilityMetadata.CurrentGameVersion}.";
             AddEmptyRow("No lobbies returned by Steam.");
+            UpdatePagingButtons();
             return;
         }
 
-        foreach (SteamLobbyBrowserEntry entry in entries)
+        RenderPage();
+    }
+
+    private void PreviousPage()
+    {
+        if (_pageIndex <= 0)
         {
-            AddLobbyRow(entry);
+            return;
         }
+
+        _pageIndex--;
+        RenderPage();
+    }
+
+    private void NextPage()
+    {
+        if (_pageIndex >= LastPageIndex)
+        {
+            return;
+        }
+
+        _pageIndex++;
+        RenderPage();
+    }
+
+    private void RenderPage()
+    {
+        ClearList();
+
+        int startIndex = _pageIndex * RowsPerPage;
+        int endIndex = Math.Min(startIndex + RowsPerPage, _entries.Count);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            AddLobbyRow(_entries[i]);
+        }
+
+        _statusLabel.Text = $"Found {_entries.Count} Steam lobbies. Page {_pageIndex + 1}/{LastPageIndex + 1}. Local version: {GameCompatibilityMetadata.CurrentGameVersion}.";
+        UpdatePagingButtons();
+    }
+
+    private int LastPageIndex => Math.Max(0, (_entries.Count - 1) / RowsPerPage);
+
+    private void UpdatePagingButtons()
+    {
+        _previousPageButton.Disabled = _pageIndex <= 0 || _entries.Count <= RowsPerPage;
+        _nextPageButton.Disabled = _pageIndex >= LastPageIndex || _entries.Count <= RowsPerPage;
     }
 
     private void ClearList()
@@ -170,43 +273,58 @@ public sealed class SteamLobbyBrowserPanel
         HBoxContainer row = new()
         {
             MouseFilter = Control.MouseFilterEnum.Pass,
-            CustomMinimumSize = new Vector2(660, 42)
+            CustomMinimumSize = new Vector2(660, 38)
         };
-
-        string displayName = Truncate(string.IsNullOrWhiteSpace(entry.Name) ? "(unnamed)" : entry.Name, 34);
-        string gameVersion = string.IsNullOrWhiteSpace(entry.GameVersion) ? "unknown" : entry.GameVersion;
 
         Label nameLabel = new()
         {
-            Text = displayName,
+            Text = entry.Name,
+            CustomMinimumSize = new Vector2(150, 34),
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+            SizeFlagsHorizontal = Control.SizeFlags.Fill
+        };
+
+        Label descriptionLabel = new()
+        {
+            Text = entry.Description,
+            CustomMinimumSize = new Vector2(250, 34),
             MouseFilter = Control.MouseFilterEnum.Ignore,
             SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
         };
 
         Label versionLabel = new()
         {
-            Text = gameVersion,
-            CustomMinimumSize = new Vector2(150, 36),
+            Text = entry.GameVersion,
+            CustomMinimumSize = new Vector2(100, 34),
             MouseFilter = Control.MouseFilterEnum.Ignore
         };
 
         Label playerCountLabel = new()
         {
             Text = $"{entry.MemberCount}/{entry.MemberLimit}",
-            CustomMinimumSize = new Vector2(72, 36),
+            CustomMinimumSize = new Vector2(60, 34),
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+
+        Label pingLabel = new()
+        {
+            Text = entry.Ping,
+            CustomMinimumSize = new Vector2(50, 34),
             MouseFilter = Control.MouseFilterEnum.Ignore
         };
 
         row.AddChild(nameLabel);
+        row.AddChild(descriptionLabel);
         row.AddChild(versionLabel);
         row.AddChild(playerCountLabel);
+        row.AddChild(pingLabel);
 
         if (_joinLobby != null)
         {
             Button joinButton = new()
             {
                 Text = "Join",
-                CustomMinimumSize = new Vector2(86, 36),
+                CustomMinimumSize = new Vector2(74, 34),
                 MouseFilter = Control.MouseFilterEnum.Stop,
                 FocusMode = Control.FocusModeEnum.All
             };
@@ -220,15 +338,5 @@ public sealed class SteamLobbyBrowserPanel
         }
 
         _list.AddChild(row);
-    }
-
-    private static string Truncate(string value, int maxLength)
-    {
-        if (value.Length <= maxLength)
-        {
-            return value;
-        }
-
-        return value[..(maxLength - 3)] + "...";
     }
 }
