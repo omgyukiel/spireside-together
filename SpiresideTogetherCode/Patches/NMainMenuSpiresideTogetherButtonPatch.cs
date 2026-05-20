@@ -22,6 +22,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
     private const string ButtonName = "SpiresideTogetherMainMenuButton";
     private const string HubRootName = "SpiresideTogetherLobbyHub";
     private const string HubScenePath = "res://SpiresideTogether/ui/server_browser_screen.tscn";
+    private const string LobbyRowScenePath = "res://SpiresideTogether/ui/LobbyRow.tscn";
     // Godot duplicate flag 4 copies scripts without copying signal connections.
     private const int DuplicateScriptsOnly = 4;
 
@@ -132,7 +133,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         WireBackButton(hub);
         WireCreateButton(hub, mainMenu);
         WireDirectJoinControls(hub, mainMenu);
-        WireRefreshButton(hub);
+        WireRefreshButton(hub, mainMenu);
         MainFile.Logger.Info("Opened Spireside Together lobby hub scene.");
     }
 
@@ -145,10 +146,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
             return;
         }
 
-        foreach (Node child in rows.GetChildren())
-        {
-            child.QueueFree();
-        }
+        ClearLobbyRows(rows);
     }
 
     private static void WireBackButton(Control hub)
@@ -240,13 +238,15 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         TaskHelper.RunSafely(mainMenu.JoinGame(SteamClientConnectionInitializer.FromLobby(lobbyId)));
     }
 
-    private static void WireRefreshButton(Control hub)
+    private static void WireRefreshButton(Control hub, NMainMenu mainMenu)
     {
         Button? refreshButton = hub.GetNodeOrNull<Button>("PanelContainer/MarginContainer/VBoxContainer/BrowserHeader/RefreshButton");
         Label? statusLabel = hub.GetNodeOrNull<Label>("PanelContainer/MarginContainer/VBoxContainer/StatusLabel");
-        if (refreshButton == null || statusLabel == null)
+        VBoxContainer? rows = hub.GetNodeOrNull<VBoxContainer>("PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/ScrollMarginContainer/Rows");
+        PackedScene? rowScene = ResourceLoader.Load<PackedScene>(LobbyRowScenePath);
+        if (refreshButton == null || statusLabel == null || rows == null || rowScene == null)
         {
-            MainFile.Logger.Warn("Could not wire lobby hub RefreshButton because RefreshButton or StatusLabel was not found.");
+            MainFile.Logger.Warn("Could not wire lobby hub RefreshButton because RefreshButton, StatusLabel, Rows, or LobbyRow scene was not found.");
             return;
         }
 
@@ -254,13 +254,19 @@ public static class NMainMenuSpiresideTogetherButtonPatch
 
         ((GodotObject)refreshButton).Connect(
             Button.SignalName.Pressed,
-            Callable.From((Action)(() => TaskHelper.RunSafely(RefreshLobbyList(statusLabel)))),
+            Callable.From((Action)(() => TaskHelper.RunSafely(RefreshLobbyList(hub, mainMenu, statusLabel, rows, rowScene)))),
             0u);
     }
 
-    private static async Task RefreshLobbyList(Label statusLabel)
+    private static async Task RefreshLobbyList(
+        Control hub,
+        NMainMenu mainMenu,
+        Label statusLabel,
+        VBoxContainer rows,
+        PackedScene rowScene)
     {
         statusLabel.Text = "Requesting public lobbies from Steam...";
+        ClearLobbyRows(rows);
         MainFile.Logger.Info("Requesting Spireside Together public lobby list from Steam.");
 
         try
@@ -269,10 +275,17 @@ public static class NMainMenuSpiresideTogetherButtonPatch
             statusLabel.Text = $"Found {entries.Count} public lobbies. Your version: {GameCompatibilityMetadata.CurrentGameVersion}.";
             MainFile.Logger.Info($"Spireside Together lobby refresh returned {entries.Count} public lobbies.");
 
+            if (entries.Count == 0)
+            {
+                AddEmptyLobbyRow(rows, "No public lobbies found.");
+                return;
+            }
+
             foreach (SteamLobbyBrowserEntry entry in entries)
             {
                 MainFile.Logger.Info(
                     $"Lobby {entry.LobbyId}: owner={entry.OwnerId}, name='{entry.Name}', description='{entry.Description}', version='{entry.GameVersion}', players={entry.MemberCount}/{entry.MemberLimit}");
+                AddLobbyRow(hub, mainMenu, rows, rowScene, entry);
             }
         }
         catch (Exception ex)
@@ -280,5 +293,65 @@ public static class NMainMenuSpiresideTogetherButtonPatch
             statusLabel.Text = "Steam lobby refresh failed. Check logs.";
             MainFile.Logger.Error($"Spireside Together lobby refresh failed: {ex}");
         }
+    }
+
+    private static void ClearLobbyRows(VBoxContainer rows)
+    {
+        foreach (Node child in rows.GetChildren())
+        {
+            child.QueueFree();
+        }
+    }
+
+    private static void AddEmptyLobbyRow(VBoxContainer rows, string text)
+    {
+        rows.AddChild(new Label
+        {
+            Text = text,
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        });
+    }
+
+    private static void AddLobbyRow(
+        Control hub,
+        NMainMenu mainMenu,
+        VBoxContainer rows,
+        PackedScene rowScene,
+        SteamLobbyBrowserEntry entry)
+    {
+        Control row = rowScene.Instantiate<Control>();
+        SetRowLabel(row, "HostNameLabel", entry.Name);
+        SetRowLabel(row, "DescriptionLabel", entry.Description);
+        SetRowLabel(row, "VersionLabel", entry.GameVersion);
+        SetRowLabel(row, "PlayersLabel", $"{entry.MemberCount}/{entry.MemberLimit}");
+        WireRowJoinButton(hub, mainMenu, row, entry.LobbyId);
+        rows.AddChild(row);
+    }
+
+    private static void SetRowLabel(Control row, string nodeName, string text)
+    {
+        Label? label = row.GetNodeOrNull<Label>(nodeName);
+        if (label == null)
+        {
+            MainFile.Logger.Warn($"Could not set lobby row label because {nodeName} was not found.");
+            return;
+        }
+
+        label.Text = text;
+    }
+
+    private static void WireRowJoinButton(Control hub, NMainMenu mainMenu, Control row, ulong lobbyId)
+    {
+        Button? joinButton = row.GetNodeOrNull<Button>("JoinButton");
+        if (joinButton == null)
+        {
+            MainFile.Logger.Warn($"Could not wire lobby row JoinButton for lobby {lobbyId} because JoinButton was not found.");
+            return;
+        }
+
+        ((GodotObject)joinButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)(() => JoinLobbyById(hub, mainMenu, lobbyId.ToString()))),
+            0u);
     }
 }
