@@ -14,3 +14,5 @@ packages/
 .editorconfig
 *.user
 Directory.Build.props
+*.uid
+*.import
