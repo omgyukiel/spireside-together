@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
@@ -130,6 +131,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         WireBackButton(hub);
         WireCreateButton(hub, mainMenu);
         WireDirectJoinControls(hub, mainMenu);
+        WireRefreshButton(hub);
         MainFile.Logger.Info("Opened Spireside Together lobby hub scene.");
     }
 
@@ -220,5 +222,47 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         MainFile.Logger.Info($"Joining Steam lobby by id {lobbyId}.");
         hub.QueueFree();
         TaskHelper.RunSafely(mainMenu.JoinGame(SteamClientConnectionInitializer.FromLobby(lobbyId)));
+    }
+
+    private static void WireRefreshButton(Control hub)
+    {
+        Button? refreshButton = hub.GetNodeOrNull<Button>("PanelContainer/MarginContainer/VBoxContainer/BrowserHeader/RefreshButton");
+        Label? statusLabel = hub.GetNodeOrNull<Label>("PanelContainer/MarginContainer/VBoxContainer/StatusLabel");
+        if (refreshButton == null || statusLabel == null)
+        {
+            MainFile.Logger.Warn("Could not wire lobby hub RefreshButton because RefreshButton or StatusLabel was not found.");
+            return;
+        }
+
+        statusLabel.Text = $"Ready to refresh public lobbies. Your version: {GameCompatibilityMetadata.CurrentGameVersion}.";
+
+        ((GodotObject)refreshButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)(() => TaskHelper.RunSafely(RefreshLobbyList(statusLabel)))),
+            0u);
+    }
+
+    private static async Task RefreshLobbyList(Label statusLabel)
+    {
+        statusLabel.Text = "Requesting public lobbies from Steam...";
+        MainFile.Logger.Info("Requesting Spireside Together public lobby list from Steam.");
+
+        try
+        {
+            var entries = await SteamLobbyBrowser.RequestPublicLobbies();
+            statusLabel.Text = $"Found {entries.Count} public lobbies. Your version: {GameCompatibilityMetadata.CurrentGameVersion}.";
+            MainFile.Logger.Info($"Spireside Together lobby refresh returned {entries.Count} public lobbies.");
+
+            foreach (SteamLobbyBrowserEntry entry in entries)
+            {
+                MainFile.Logger.Info(
+                    $"Lobby {entry.LobbyId}: owner={entry.OwnerId}, name='{entry.Name}', description='{entry.Description}', version='{entry.GameVersion}', players={entry.MemberCount}/{entry.MemberLimit}");
+            }
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = "Steam lobby refresh failed. Check logs.";
+            MainFile.Logger.Error($"Spireside Together lobby refresh failed: {ex}");
+        }
     }
 }
