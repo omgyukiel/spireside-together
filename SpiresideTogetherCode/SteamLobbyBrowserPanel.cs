@@ -306,18 +306,10 @@ public sealed class SteamLobbyBrowserPanel
             MouseFilter = Control.MouseFilterEnum.Ignore
         };
 
-        Label pingLabel = new()
-        {
-            Text = entry.Ping,
-            CustomMinimumSize = new Vector2(50, 34),
-            MouseFilter = Control.MouseFilterEnum.Ignore
-        };
-
         row.AddChild(nameLabel);
         row.AddChild(descriptionLabel);
         row.AddChild(versionLabel);
         row.AddChild(playerCountLabel);
-        row.AddChild(pingLabel);
 
         if (_joinLobby != null)
         {

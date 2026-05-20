@@ -46,8 +46,7 @@ public static class SteamLobbyBrowser
                 MemberLimit = SteamMatchmaking.GetLobbyMemberLimit(lobbyId),
                 Name = name,
                 Description = description,
-                GameVersion = gameVersion,
-                Ping = "?"
+                GameVersion = gameVersion
             });
         }
 
