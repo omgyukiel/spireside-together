@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c6bpisfr27fe6"]
 
-[node name="HBoxContainer" type="HBoxContainer"]
+[node name="LobbyRow" type="HBoxContainer"]
 custom_minimum_size = Vector2(840, 42)
 offset_left = 67.0
 offset_top = 143.0
@@ -8,27 +8,24 @@ offset_right = 107.0
 offset_bottom = 183.0
 theme_override_constants/separation = 8
 
-[node name="Host" type="Label" parent="."]
+[node name="HostNameLabel" type="Label" parent="."]
 layout_mode = 2
 text = "Yukiel"
 
-[node name="Description" type="Label" parent="."]
+[node name="DescriptionLabel" type="Label" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "asc 20"
 
-[node name="Version" type="Label" parent="."]
+[node name="VersionLabel" type="Label" parent="."]
 layout_mode = 2
 text = "v0.123"
 
-[node name="Players" type="Label" parent="."]
+[node name="PlayersLabel" type="Label" parent="."]
 layout_mode = 2
 text = "1/4"
 
-[node name="Join" type="Button" parent="."]
+[node name="JoinButton" type="Button" parent="."]
 custom_minimum_size = Vector2(80, 36)
 layout_mode = 2
 text = "Join"
-
-[node name="LobbyRow" type="Control" parent="."]
-layout_mode = 2
