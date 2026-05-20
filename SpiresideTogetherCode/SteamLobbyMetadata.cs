@@ -8,8 +8,8 @@ public static class SteamLobbyMetadata
     public const string DescriptionKey = "description";
     public const string GameVersionKey = "sts2_game_version";
 
-    public const int MaxHostNameLength = 24;
-    public const int MaxDescriptionLength = 64;
+    public const int MaxHostNameLength = 16;
+    public const int MaxDescriptionLength = 45;
     public const int MaxGameVersionLength = 16;
 
     public static string NormalizeHostName(string? value)

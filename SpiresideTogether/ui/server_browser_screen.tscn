@@ -77,6 +77,7 @@ theme_override_constants/separation = 8
 custom_minimum_size = Vector2(500, 38)
 layout_mode = 2
 size_flags_horizontal = 3
+max_length = 45
 placeholder_text = "Lobby Description"
 
 [node name="CreateButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow"]
