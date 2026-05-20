@@ -21,6 +21,14 @@ Installation instructions will be added when the mod is implemented
 
 ## Development
 
+Create local machine build settings first:
+
+```bash
+cp Directory.Build.props.example Directory.Build.props
+```
+
+Then edit `Directory.Build.props` for your local paths. `GodotPath` is required for `dotnet publish` because publishing exports the scene assets into `SpiresideTogether.pck`.
+
 Restore and build the project with:
 
 ```bash
@@ -35,6 +43,12 @@ dotnet build /p:Sts2Path="/path/to/Slay the Spire 2"
 ```
 
 The template build copies the compiled mod DLL and manifest into the game's `mods/SpiresideTogether/` folder when the game path is configured correctly.
+
+To package Godot scene assets into the mod folder, run:
+
+```bash
+dotnet publish
+```
 
 ## Repository Notes
 
