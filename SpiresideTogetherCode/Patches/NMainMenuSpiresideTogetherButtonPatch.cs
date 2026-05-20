@@ -128,11 +128,27 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         Control hub = scene.Instantiate<Control>();
         hub.Name = HubRootName;
         mainMenuNode.AddChild(hub);
+        ClearMockLobbyRows(hub);
         WireBackButton(hub);
         WireCreateButton(hub, mainMenu);
         WireDirectJoinControls(hub, mainMenu);
         WireRefreshButton(hub);
         MainFile.Logger.Info("Opened Spireside Together lobby hub scene.");
+    }
+
+    private static void ClearMockLobbyRows(Control hub)
+    {
+        VBoxContainer? rows = hub.GetNodeOrNull<VBoxContainer>("PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/ScrollMarginContainer/Rows");
+        if (rows == null)
+        {
+            MainFile.Logger.Warn("Could not clear mock lobby rows because Rows was not found.");
+            return;
+        }
+
+        foreach (Node child in rows.GetChildren())
+        {
+            child.QueueFree();
+        }
     }
 
     private static void WireBackButton(Control hub)
