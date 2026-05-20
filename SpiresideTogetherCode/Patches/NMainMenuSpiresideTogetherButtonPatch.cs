@@ -33,7 +33,20 @@ public static class NMainMenuSpiresideTogetherButtonPatch
 
         Control button = CreateButton(buttonContainer, __instance);
         buttonContainer.AddChild(button);
+        MoveButtonAfterMultiplayer(buttonContainer, button);
         MainFile.Logger.Info("Added Spireside Together main menu button.");
+    }
+
+    private static void MoveButtonAfterMultiplayer(Node buttonContainer, Control button)
+    {
+        Node? multiplayerButton = buttonContainer.GetNodeOrNull<Node>("MultiplayerButton");
+        if (multiplayerButton == null)
+        {
+            MainFile.Logger.Warn("Could not place Spireside Together button after MultiplayerButton because MultiplayerButton was not found.");
+            return;
+        }
+
+        buttonContainer.MoveChild(button, multiplayerButton.GetIndex() + 1);
     }
 
     private static Control CreateButton(Node buttonContainer, NMainMenu mainMenu)
