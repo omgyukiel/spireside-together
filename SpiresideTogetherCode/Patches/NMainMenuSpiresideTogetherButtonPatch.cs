@@ -3,6 +3,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.addons.mega_text;
 
 namespace SpiresideTogether.SpiresideTogetherCode.Patches;
@@ -120,6 +121,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         hub.Name = HubRootName;
         mainMenuNode.AddChild(hub);
         WireBackButton(hub);
+        WireCreateButton(hub, mainMenu);
         MainFile.Logger.Info("Opened Spireside Together lobby hub scene.");
     }
 
@@ -136,5 +138,32 @@ public static class NMainMenuSpiresideTogetherButtonPatch
             Button.SignalName.Pressed,
             Callable.From((Action)(() => hub.QueueFree())),
             0u);
+    }
+
+    private static void WireCreateButton(Control hub, NMainMenu mainMenu)
+    {
+        LineEdit? descriptionInput = hub.GetNodeOrNull<LineEdit>("PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow/DescriptionInput");
+        Button? createButton = hub.GetNodeOrNull<Button>("PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow/CreateButton");
+        if (descriptionInput == null || createButton == null)
+        {
+            MainFile.Logger.Warn("Could not wire lobby hub CreateButton because DescriptionInput or CreateButton was not found.");
+            return;
+        }
+
+        ((GodotObject)createButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)(() => CreateStandardLobby(hub, mainMenu, descriptionInput))),
+            0u);
+    }
+
+    private static void CreateStandardLobby(Control hub, NMainMenu mainMenu, LineEdit descriptionInput)
+    {
+        string description = SteamLobbyMetadata.NormalizeDescription(descriptionInput.Text);
+        PendingLobbyCreationMetadata.SetDescription(description);
+        MainFile.Logger.Info($"Creating Spireside Together standard lobby with description '{description}'.");
+
+        hub.QueueFree();
+        NMultiplayerHostSubmenu hostSubmenu = mainMenu.SubmenuStack.PushSubmenuType<NMultiplayerHostSubmenu>();
+        hostSubmenu.StartHost(GameMode.Standard);
     }
 }

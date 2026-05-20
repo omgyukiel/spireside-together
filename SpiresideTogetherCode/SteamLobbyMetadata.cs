@@ -19,7 +19,7 @@ public static class SteamLobbyMetadata
 
     public static string NormalizeDescription(string? value)
     {
-        return Normalize(value, "Public lobby", MaxDescriptionLength);
+        return Normalize(value, "Public Spireside Together lobby", MaxDescriptionLength);
     }
 
     public static string NormalizeGameVersion(string? value)

@@ -28,12 +28,12 @@ public class SteamHostPublicLobbyPatch
         // Wait for original startHost task to complete before checking LobbyId
         var result = await startHostTask;
         MainFile.Logger.Info($"Steam host startup complete. Error: {result.HasValue.ToString()}");
+        string description = PendingLobbyCreationMetadata.ConsumeDescription();
         // null result means successful lobby completion, so return if result has value
         if (result.HasValue || !host.LobbyId.HasValue) return result;
         MainFile.Logger.Info($"Steam lobby id is {host.GetRawLobbyIdentifier()}");
         string gameVersion = GameCompatibilityMetadata.CurrentGameVersion;
         string hostName = SteamLobbyMetadata.NormalizeHostName(GetHostPersonaName());
-        string description = SteamLobbyMetadata.NormalizeDescription("Public Spireside Together lobby");
         SteamMatchmaking.SetLobbyType(host.LobbyId.Value, ELobbyType.k_ELobbyTypePublic);
         SteamMatchmaking.SetLobbyData(host.LobbyId.Value, SteamLobbyMetadata.ModMarkerKey, SteamLobbyMetadata.ModMarkerValue);
         SteamMatchmaking.SetLobbyData(host.LobbyId.Value, SteamLobbyMetadata.NameKey, hostName);
