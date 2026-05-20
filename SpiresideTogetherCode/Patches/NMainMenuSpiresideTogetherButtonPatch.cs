@@ -8,6 +8,11 @@ using MegaCrit.Sts2.addons.mega_text;
 
 namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 
+/// <summary>
+/// Adds the Spireside Together entry point to the main menu and loads the scene-backed lobby hub.
+/// Hub actions are wired here so the Godot scene owns layout while this patch owns integration with
+/// the native main menu and host flow.
+/// </summary>
 [HarmonyPatch(typeof(NMainMenu), nameof(NMainMenu._Ready))]
 public static class NMainMenuSpiresideTogetherButtonPatch
 {

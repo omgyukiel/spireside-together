@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 
 namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 
-/*
-   Change the lobby type from friends -> public. In MegaCrit.Sts2.Core.Multiplayer.Transport.Steam,
-   the CSteamID is created and stored in the SteamHost instance only when the task result resolves
-   to EResult.k_EResultOK. We use this status to implicitly infer the availability of the lobby id
-   to modify the lobby type after StartHost 
-*/
+/// <summary>
+/// Converts newly-created Steam lobbies from friends-only to public and publishes the metadata used by
+/// the Spireside Together browser. SteamHost only exposes a lobby id after StartHost completes
+/// successfully, so this patch wraps the returned task and updates lobby state after native creation.
+/// </summary>
 [HarmonyPatch(typeof(SteamHost), nameof(SteamHost.StartHost))]
 public class SteamHostPublicLobbyPatch
 {
