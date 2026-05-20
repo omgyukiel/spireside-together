@@ -1,6 +1,8 @@
 using System;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Runs;
@@ -127,6 +129,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         mainMenuNode.AddChild(hub);
         WireBackButton(hub);
         WireCreateButton(hub, mainMenu);
+        WireDirectJoinControls(hub, mainMenu);
         MainFile.Logger.Info("Opened Spireside Together lobby hub scene.");
     }
 
@@ -170,5 +173,52 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         hub.QueueFree();
         NMultiplayerHostSubmenu hostSubmenu = mainMenu.SubmenuStack.PushSubmenuType<NMultiplayerHostSubmenu>();
         hostSubmenu.StartHost(GameMode.Standard);
+    }
+
+    private static void WireDirectJoinControls(Control hub, NMainMenu mainMenu)
+    {
+        LineEdit? lobbyIdInput = hub.GetNodeOrNull<LineEdit>("PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow/LobbyIdInput");
+        Button? pasteButton = hub.GetNodeOrNull<Button>("PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow/PasteButton");
+        Button? joinIdButton = hub.GetNodeOrNull<Button>("PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow/JoinIdButton");
+        if (lobbyIdInput == null || pasteButton == null || joinIdButton == null)
+        {
+            MainFile.Logger.Warn("Could not wire lobby hub direct join controls because LobbyIdInput, PasteButton, or JoinIdButton was not found.");
+            return;
+        }
+
+        ((GodotObject)pasteButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)(() => PasteClipboardInto(lobbyIdInput))),
+            0u);
+
+        ((GodotObject)joinIdButton).Connect(
+            Button.SignalName.Pressed,
+            Callable.From((Action)(() => JoinLobbyById(hub, mainMenu, lobbyIdInput.Text))),
+            0u);
+
+        ((GodotObject)lobbyIdInput).Connect(
+            LineEdit.SignalName.TextSubmitted,
+            Callable.From<string>((Action<string>)(rawLobbyId => JoinLobbyById(hub, mainMenu, rawLobbyId))),
+            0u);
+    }
+
+    private static void PasteClipboardInto(LineEdit input)
+    {
+        input.Text = DisplayServer.ClipboardGet();
+        input.GrabFocus();
+        input.CaretColumn = input.Text.Length;
+    }
+
+    private static void JoinLobbyById(Control hub, NMainMenu mainMenu, string? rawLobbyId)
+    {
+        if (!LobbyIdParser.TryParseLobbyId(rawLobbyId, out ulong lobbyId))
+        {
+            MainFile.Logger.Warn($"Could not direct join lobby because '{rawLobbyId}' is not a valid Steam lobby id.");
+            return;
+        }
+
+        MainFile.Logger.Info($"Joining Steam lobby by id {lobbyId}.");
+        hub.QueueFree();
+        TaskHelper.RunSafely(mainMenu.JoinGame(SteamClientConnectionInitializer.FromLobby(lobbyId)));
     }
 }
