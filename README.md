@@ -14,7 +14,7 @@ This mod depends on the following for chat support:
 
 - [lemonSpire2](https://www.nexusmods.com/slaythespire2/mods/29?tab=description) >= v0.7.4
 - [RitsuLib](https://www.nexusmods.com/slaythespire2/mods/137?tab=description)
-
+- Slay the Spire 2 >= v0.105.0 which as of 05/21/2026 is on the beta branch
 ## Compatability
 You must be running v0.105.0 or higher for STS2 to run lemonSpire2. You cannot join lobbies with conflicting game versions.
 
