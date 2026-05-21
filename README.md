@@ -21,8 +21,18 @@ You must be running v0.105.0 or higher for STS2 to run lemonSpire2. You cannot j
 Currently behavior with mismatched mods between players is untested and can likely break compatibility.
 
 ## Installation
+### Dependencies
+This mod uses lemonspire2 for chat. Download it and its dependency, RitsuLib either from github (reccomended) or nexusmods and extract them into the mods folder at your STS2 install location: `*\steamapps\common\Slay the Spire 2\mods`
 
-wip
+**lemonspire2:** [github](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.4)
+[nexusmods](https://www.nexusmods.com/slaythespire2/mods/29?tab=description)
+
+**RitsuLib:**
+[github](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.2.40)
+[nexusmods](https://www.nexusmods.com/slaythespire2/mods/137?tab=description)
+
+### Download spireside-together
+To install spireside-together, download the zip folder in the [latest release](https://github.com/omgyukiel/spireside-together/releases) and extract it to your mods folder in your `*\steamapps\common\Slay the Spire 2\mods`
 
 ---
 ## Development Requirements
