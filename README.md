@@ -1,12 +1,31 @@
 # Spireside Together
 
-Spireside Together is a Slay the Spire 2 mod that enables public co-op lobbies without needing to be friends on Steam. Version 1 with server browers is wip. Currently you can install the mod and handle direct connections.
+Spireside Together is a Slay the Spire 2 mod that enables public multiplayer with strangers by enabling hosts to create public lobbies and guests to search with a server browser.
 
-## Install
+## Features
+This mod adds a server browser that can search up to 200 public lobbies with filtering by hostname, description, or game version.
 
-Installation instructions will be added when the mod is implemented
+Hosts can create public lobbies from the Spireside Together Multiplayer menu and copy their lobby ids.
 
-## Requirements
+Guests can join directly by lobby ids or connect to lobbies found in the server browser.
+
+## Dependencies
+This mod depends on the following for chat support:
+
+- [lemonSpire2](https://www.nexusmods.com/slaythespire2/mods/29?tab=description) >= v0.7.4
+- [RitsuLib](https://www.nexusmods.com/slaythespire2/mods/137?tab=description)
+
+## Compatability
+You must be running v0.105.0 or higher for STS2 to run lemonSpire2. You cannot join lobbies with conflicting game versions.
+
+Currently behavior with mismatched mods between players is untested and can likely break compatibility.
+
+## Installation
+
+wip
+
+---
+## Development Requirements
 
 - Slay the Spire 2 installed through Steam.
 - A working Slay the Spire 2 modding setup with BaseLib.
@@ -44,10 +63,7 @@ To package Godot scene assets into the mod folder, run:
 dotnet publish
 ```
 
-## Repository Notes
-
-This project was generated from the Alchyr Slay the Spire 2 mod template and currently uses the blank BaseLib/Harmony mod structure.
-
+---
 ## License
 
 See [LICENSE](LICENSE).
