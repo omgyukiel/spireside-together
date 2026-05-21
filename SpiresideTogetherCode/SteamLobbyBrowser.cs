@@ -8,6 +8,8 @@ namespace SpiresideTogether.SpiresideTogetherCode;
 
 public static class SteamLobbyBrowser
 {
+    private const int MaxLobbyResults = 100;
+
     public static async Task<IReadOnlyList<SteamLobbyBrowserEntry>> RequestPublicLobbies()
     {
         if (!SteamInitializer.Initialized)
@@ -20,7 +22,7 @@ public static class SteamLobbyBrowser
             SteamLobbyMetadata.ModMarkerKey,
             SteamLobbyMetadata.ModMarkerValue,
             ELobbyComparison.k_ELobbyComparisonEqual);
-        SteamMatchmaking.AddRequestLobbyListResultCountFilter(50);
+        SteamMatchmaking.AddRequestLobbyListResultCountFilter(MaxLobbyResults);
 
         SteamAPICall_t call = SteamMatchmaking.RequestLobbyList();
         using SteamCallResult<LobbyMatchList_t> callResult = new(call);

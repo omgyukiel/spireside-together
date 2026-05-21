@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace SpiresideTogether.SpiresideTogetherCode.Patches;
 
 /// <summary>
-/// Converts newly-created Steam lobbies from friends-only to public and publishes the metadata used by
-/// the Spireside Together browser. SteamHost only exposes a lobby id after StartHost completes
-/// successfully, so this patch wraps the returned task and updates lobby state after native creation.
+/// Converts Spireside-created Steam lobbies from friends-only to public and publishes the metadata used
+/// by the lobby browser. SteamHost only exposes a lobby id after StartHost completes successfully, so
+/// this patch wraps the returned task and updates lobby state after native creation.
 /// </summary>
 [HarmonyPatch(typeof(SteamHost), nameof(SteamHost.StartHost))]
 public class SteamHostPublicLobbyPatch
@@ -27,7 +27,11 @@ public class SteamHostPublicLobbyPatch
         // Wait for original startHost task to complete before checking LobbyId
         var result = await startHostTask;
         MainFile.Logger.Info($"Steam host startup complete. Error: {result.HasValue.ToString()}");
-        string description = PendingLobbyCreationMetadata.ConsumeDescription();
+        if (!PendingLobbyCreationMetadata.TryConsumePublicLobbyDescription(out string description))
+        {
+            return result;
+        }
+
         // null result means successful lobby completion, so return if result has value
         if (result.HasValue || !host.LobbyId.HasValue) return result;
         MainFile.Logger.Info($"Steam lobby id is {host.GetRawLobbyIdentifier()}");
@@ -39,6 +43,7 @@ public class SteamHostPublicLobbyPatch
         SteamMatchmaking.SetLobbyData(host.LobbyId.Value, SteamLobbyMetadata.DescriptionKey, description);
         SteamMatchmaking.SetLobbyData(host.LobbyId.Value, SteamLobbyMetadata.GameVersionKey, gameVersion);
         MainFile.Logger.Info($"Steam lobby set to public with game version metadata {gameVersion}.");
+        SpiresideLobbyUiScenes.ShowHostLobbyId(host.GetRawLobbyIdentifier());
 
         return result;
     }

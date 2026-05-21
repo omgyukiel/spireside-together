@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://cqm0wlvofav3g"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_quhpr"]
+
+[node name="HostLobbyId" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 0
+offset_left = 1450.0
+offset_top = 964.0
+offset_right = 1850.0
+offset_bottom = 1035.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_quhpr")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="LobbyIdLabel" type="Label" parent="Panel/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "LobbyId: 1234567890123456"
+
+[node name="CopyLobbyIdButton" type="Button" parent="Panel/HBoxContainer"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Copy"

@@ -9,10 +9,16 @@ public static class PendingLobbyCreationMetadata
         _description = SteamLobbyMetadata.NormalizeDescription(description);
     }
 
-    public static string ConsumeDescription()
+    public static bool TryConsumePublicLobbyDescription(out string description)
     {
-        string description = _description ?? SteamLobbyMetadata.NormalizeDescription(null);
+        if (_description == null)
+        {
+            description = "";
+            return false;
+        }
+
+        description = _description;
         _description = null;
-        return description;
+        return true;
     }
 }
