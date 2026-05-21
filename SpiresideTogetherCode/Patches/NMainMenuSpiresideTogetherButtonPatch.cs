@@ -44,7 +44,36 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         Control button = CreateButton(buttonContainer, __instance);
         buttonContainer.AddChild(button);
         MoveButtonAfterMultiplayer(buttonContainer, button);
+        EnableSpiresideButton(button);
         MainFile.Logger.Info("Added Spireside Together main menu button.");
+    }
+
+    internal static void EnableSpiresideButton(NMainMenu mainMenu)
+    {
+        Node mainMenuNode = mainMenu;
+        Control? button = mainMenuNode.GetNodeOrNull<Control>($"MainMenuTextButtons/{ButtonName}");
+        if (button == null)
+        {
+            return;
+        }
+
+        EnableSpiresideButton(button);
+    }
+
+    private static void EnableSpiresideButton(Control button)
+    {
+        if (button is NClickableControl clickableControl)
+        {
+            clickableControl.Enable();
+        }
+
+        if (button is Button godotButton)
+        {
+            godotButton.Disabled = false;
+        }
+
+        button.Modulate = Colors.White;
+        button.SelfModulate = Colors.White;
     }
 
     private static void MoveButtonAfterMultiplayer(Node buttonContainer, Control button)
