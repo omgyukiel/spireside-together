@@ -1,6 +1,5 @@
 using System;
 using Godot;
-using MegaCrit.Sts2.Core.Nodes;
 
 namespace SpiresideTogether.SpiresideTogetherCode;
 
@@ -9,7 +8,7 @@ public static class SpiresideLobbyUiScenes
     private const string HostLobbyIdScenePath = "res://SpiresideTogether/ui/HostLobbyId.tscn";
     private const string HostLobbyIdRootName = "SpiresideTogetherHostLobbyId";
 
-    public static void ShowHostLobbyId(string lobbyId)
+    public static void ShowHostLobbyId(Node parent, string lobbyId)
     {
         Control? scene = InstantiateScene(HostLobbyIdScenePath, HostLobbyIdRootName);
         if (scene == null)
@@ -32,7 +31,7 @@ public static class SpiresideLobbyUiScenes
             Callable.From((Action)(() => DisplayServer.ClipboardSet(lobbyId))),
             0u);
 
-        AddToCurrentMainMenu(scene, HostLobbyIdRootName);
+        AddToParent(parent, scene, HostLobbyIdRootName);
     }
 
     private static Control? InstantiateScene(string scenePath, string sceneName)
@@ -49,16 +48,8 @@ public static class SpiresideLobbyUiScenes
         return scene;
     }
 
-    private static void AddToCurrentMainMenu(Control scene, string rootName)
+    private static void AddToParent(Node parent, Control scene, string rootName)
     {
-        Node? parent = NGame.Instance?.MainMenu;
-        if (parent == null)
-        {
-            MainFile.Logger.Warn($"Could not add {rootName} because the main menu is not available.");
-            scene.QueueFree();
-            return;
-        }
-
         Node? existing = parent.GetNodeOrNull<Node>(rootName);
         existing?.QueueFree();
         parent.AddChild(scene);
