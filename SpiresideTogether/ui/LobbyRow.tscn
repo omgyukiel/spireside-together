@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c6bpisfr27fe6"]
 
 [node name="LobbyRow" type="HBoxContainer"]
-custom_minimum_size = Vector2(840, 42)
+custom_minimum_size = Vector2(956, 42)
 offset_left = 67.0
 offset_top = 143.0
 offset_right = 107.0
@@ -16,7 +16,7 @@ text = "Yukiel"
 [node name="DescriptionLabel" type="Label" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "123456789012345678901234567890123456789012345"
+text = "123456789012345678901234567890123456789012345678901234567"
 
 [node name="VersionLabel" type="Label" parent="."]
 custom_minimum_size = Vector2(100, 0)

@@ -15,7 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(900, 720)
+custom_minimum_size = Vector2(1000, 800)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -66,9 +66,13 @@ theme_override_constants/separation = 12
 
 [node name="BrowserTitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/BrowserHeader"]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 21
 text = "Public Lobbies"
+
+[node name="FilterRowsInput" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/BrowserHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Filter found lobbies"
 
 [node name="RefreshButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/BrowserHeader"]
 custom_minimum_size = Vector2(90, 38)
@@ -86,6 +90,7 @@ size_flags_vertical = 3
 
 [node name="ScrollMarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
@@ -141,7 +146,7 @@ custom_minimum_size = Vector2(500, 38)
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Lobby Description"
-max_length = 45
+max_length = 57
 
 [node name="CreateButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow"]
 custom_minimum_size = Vector2(80, 20)
