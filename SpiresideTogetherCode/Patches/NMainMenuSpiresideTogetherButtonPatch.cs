@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
@@ -23,6 +24,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
     private const string HubRootName = "SpiresideTogetherLobbyHub";
     private const string HubScenePath = "res://SpiresideTogether/ui/server_browser_screen.tscn";
     private const string LobbyRowScenePath = "res://SpiresideTogether/ui/LobbyRow.tscn";
+    private static readonly Color VersionMismatchColor = new(0.95f, 0.25f, 0.2f);
     // Godot duplicate flag 4 copies scripts without copying signal connections.
     private const int DuplicateScriptsOnly = 4;
 
@@ -270,6 +272,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
     private static void WireRefreshButton(Control hub, NMainMenu mainMenu)
     {
         Button? refreshButton = hub.GetNodeOrNull<Button>("PanelContainer/MarginContainer/VBoxContainer/BrowserHeader/RefreshButton");
+        LineEdit? filterInput = hub.GetNodeOrNull<LineEdit>("PanelContainer/MarginContainer/VBoxContainer/BrowserHeader/FilterRowsInput");
         Label? statusLabel = hub.GetNodeOrNull<Label>("PanelContainer/MarginContainer/VBoxContainer/StatusLabel");
         VBoxContainer? rows = hub.GetNodeOrNull<VBoxContainer>("PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/ScrollMarginContainer/Rows");
         PackedScene? rowScene = ResourceLoader.Load<PackedScene>(LobbyRowScenePath);
@@ -280,11 +283,20 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         }
 
         statusLabel.Text = $"Ready to refresh public lobbies. Your version: {GameCompatibilityMetadata.CurrentGameVersion}.";
+        List<SteamLobbyBrowserEntry> cachedEntries = new();
 
         ((GodotObject)refreshButton).Connect(
             Button.SignalName.Pressed,
-            Callable.From((Action)(() => TaskHelper.RunSafely(RefreshLobbyList(hub, mainMenu, statusLabel, rows, rowScene)))),
+            Callable.From((Action)(() => TaskHelper.RunSafely(RefreshLobbyList(hub, mainMenu, statusLabel, rows, rowScene, filterInput, cachedEntries)))),
             0u);
+
+        if (filterInput != null)
+        {
+            ((GodotObject)filterInput).Connect(
+                LineEdit.SignalName.TextChanged,
+                Callable.From<string>((Action<string>)(filterText => UpdateFilteredLobbyRows(hub, mainMenu, statusLabel, rows, rowScene, cachedEntries, filterText))),
+                0u);
+        }
     }
 
     private static async Task RefreshLobbyList(
@@ -292,7 +304,9 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         NMainMenu mainMenu,
         Label statusLabel,
         VBoxContainer rows,
-        PackedScene rowScene)
+        PackedScene rowScene,
+        LineEdit? filterInput,
+        List<SteamLobbyBrowserEntry> cachedEntries)
     {
         statusLabel.Text = "Requesting public lobbies from Steam...";
         ClearLobbyRows(rows);
@@ -301,20 +315,17 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         try
         {
             var entries = await SteamLobbyBrowser.RequestPublicLobbies();
-            statusLabel.Text = $"Found {entries.Count} public lobbies. Your version: {GameCompatibilityMetadata.CurrentGameVersion}.";
+            cachedEntries.Clear();
+            cachedEntries.AddRange(entries);
+            string filterText = filterInput?.Text ?? "";
+            int visibleRows = UpdateFilteredLobbyRows(hub, mainMenu, statusLabel, rows, rowScene, cachedEntries, filterText);
+            statusLabel.Text = FormatLobbyStatus(entries.Count, visibleRows);
             MainFile.Logger.Info($"Spireside Together lobby refresh returned {entries.Count} public lobbies.");
-
-            if (entries.Count == 0)
-            {
-                AddEmptyLobbyRow(rows, "No public lobbies found.");
-                return;
-            }
 
             foreach (SteamLobbyBrowserEntry entry in entries)
             {
                 MainFile.Logger.Info(
                     $"Lobby {entry.LobbyId}: owner={entry.OwnerId}, name='{entry.Name}', description='{entry.Description}', version='{entry.GameVersion}', players={entry.MemberCount}/{entry.MemberLimit}");
-                AddLobbyRow(hub, mainMenu, rows, rowScene, entry);
             }
         }
         catch (Exception ex)
@@ -322,6 +333,65 @@ public static class NMainMenuSpiresideTogetherButtonPatch
             statusLabel.Text = "Steam lobby refresh failed. Check logs.";
             MainFile.Logger.Error($"Spireside Together lobby refresh failed: {ex}");
         }
+    }
+
+    private static int UpdateFilteredLobbyRows(
+        Control hub,
+        NMainMenu mainMenu,
+        Label statusLabel,
+        VBoxContainer rows,
+        PackedScene rowScene,
+        IReadOnlyList<SteamLobbyBrowserEntry> entries,
+        string? filterText)
+    {
+        ClearLobbyRows(rows);
+
+        if (entries.Count == 0)
+        {
+            AddEmptyLobbyRow(rows, "No public lobbies found.");
+            return 0;
+        }
+
+        int visibleRows = 0;
+        foreach (SteamLobbyBrowserEntry entry in entries)
+        {
+            if (!MatchesLobbyFilter(entry, filterText))
+            {
+                continue;
+            }
+
+            AddLobbyRow(hub, mainMenu, rows, rowScene, entry);
+            visibleRows++;
+        }
+
+        if (visibleRows == 0)
+        {
+            AddEmptyLobbyRow(rows, "No lobbies match the filter.");
+        }
+
+        statusLabel.Text = FormatLobbyStatus(entries.Count, visibleRows);
+        return visibleRows;
+    }
+
+    private static bool MatchesLobbyFilter(SteamLobbyBrowserEntry entry, string? filterText)
+    {
+        if (string.IsNullOrWhiteSpace(filterText))
+        {
+            return true;
+        }
+
+        string filter = filterText.Trim();
+        return entry.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)
+               || entry.Description.Contains(filter, StringComparison.OrdinalIgnoreCase)
+               || entry.GameVersion.Contains(filter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string FormatLobbyStatus(int totalRows, int visibleRows)
+    {
+        string version = GameCompatibilityMetadata.CurrentGameVersion;
+        return visibleRows == totalRows
+            ? $"Found {totalRows} public lobbies. Your version: {version}."
+            : $"Showing {visibleRows} of {totalRows} public lobbies. Your version: {version}.";
     }
 
     private static void ClearLobbyRows(VBoxContainer rows)
@@ -353,7 +423,7 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         SetRowLabel(row, "DescriptionLabel", entry.Description);
         SetRowLabel(row, "VersionLabel", entry.GameVersion);
         SetRowLabel(row, "PlayersLabel", $"{entry.MemberCount}/{entry.MemberLimit}");
-        WireRowJoinButton(hub, mainMenu, row, entry.LobbyId);
+        WireRowJoinButton(hub, mainMenu, row, entry);
         rows.AddChild(row);
     }
 
@@ -369,18 +439,44 @@ public static class NMainMenuSpiresideTogetherButtonPatch
         label.Text = text;
     }
 
-    private static void WireRowJoinButton(Control hub, NMainMenu mainMenu, Control row, ulong lobbyId)
+    private static void WireRowJoinButton(Control hub, NMainMenu mainMenu, Control row, SteamLobbyBrowserEntry entry)
     {
         Button? joinButton = row.GetNodeOrNull<Button>("JoinButton");
         if (joinButton == null)
         {
-            MainFile.Logger.Warn($"Could not wire lobby row JoinButton for lobby {lobbyId} because JoinButton was not found.");
+            MainFile.Logger.Warn($"Could not wire lobby row JoinButton for lobby {entry.LobbyId} because JoinButton was not found.");
+            return;
+        }
+
+        if (!IsCompatibleLobbyVersion(entry.GameVersion))
+        {
+            joinButton.Disabled = true;
+            joinButton.Text = "Version";
+            joinButton.TooltipText = $"Host version {entry.GameVersion} does not match your version {GameCompatibilityMetadata.CurrentGameVersion}.";
+            joinButton.Modulate = VersionMismatchColor;
+            SetRowLabelColor(row, "VersionLabel", VersionMismatchColor);
             return;
         }
 
         ((GodotObject)joinButton).Connect(
             Button.SignalName.Pressed,
-            Callable.From((Action)(() => JoinLobbyById(hub, mainMenu, lobbyId.ToString()))),
+            Callable.From((Action)(() => JoinLobbyById(hub, mainMenu, entry.LobbyId.ToString()))),
             0u);
+    }
+
+    private static bool IsCompatibleLobbyVersion(string lobbyGameVersion)
+    {
+        return string.Equals(lobbyGameVersion, GameCompatibilityMetadata.CurrentGameVersion, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void SetRowLabelColor(Control row, string nodeName, Color color)
+    {
+        Label? label = row.GetNodeOrNull<Label>(nodeName);
+        if (label == null)
+        {
+            return;
+        }
+
+        label.Modulate = color;
     }
 }
