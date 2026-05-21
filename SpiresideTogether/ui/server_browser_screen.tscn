@@ -60,60 +60,6 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 2
 text = "Back"
 
-[node name="CreateSection" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="CreateTitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 21
-text = "Create Lobby"
-
-[node name="CreateRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="DescriptionInput" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow"]
-custom_minimum_size = Vector2(500, 38)
-layout_mode = 2
-size_flags_horizontal = 3
-max_length = 45
-placeholder_text = "Lobby Description"
-
-[node name="CreateButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow"]
-custom_minimum_size = Vector2(80, 20)
-layout_mode = 2
-text = "Create"
-
-[node name="DirectJoinSection" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="DirectJoinTitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 21
-text = "Direct Connect"
-
-[node name="DirectJoinRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="LobbyIdInput" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow"]
-custom_minimum_size = Vector2(420, 38)
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "LobbyId"
-
-[node name="PasteButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow"]
-custom_minimum_size = Vector2(80, 38)
-layout_mode = 2
-text = "Paste"
-
-[node name="JoinIdButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow"]
-custom_minimum_size = Vector2(90, 38)
-layout_mode = 2
-text = "Join ID"
-
 [node name="BrowserHeader" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -177,7 +123,62 @@ layout_mode = 2
 [node name="LobbyRow9" parent="PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/ScrollMarginContainer/Rows" instance=ExtResource("1_obugh")]
 layout_mode = 2
 
+[node name="CreateSection" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CreateTitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "Create Lobby"
+
+[node name="CreateRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DescriptionInput" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow"]
+custom_minimum_size = Vector2(500, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Lobby Description"
+max_length = 45
+
+[node name="CreateButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/CreateSection/CreateRow"]
+custom_minimum_size = Vector2(80, 20)
+layout_mode = 2
+text = "Create"
+
+[node name="DirectJoinSection" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DirectJoinTitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "Direct Connect"
+
+[node name="DirectJoinRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LobbyIdInput" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow"]
+custom_minimum_size = Vector2(420, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "LobbyId"
+
+[node name="PasteButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow"]
+custom_minimum_size = Vector2(80, 38)
+layout_mode = 2
+text = "Paste"
+
+[node name="JoinIdButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/DirectJoinSection/DirectJoinRow"]
+custom_minimum_size = Vector2(90, 38)
+layout_mode = 2
+text = "Join ID"
+
 [node name="Pagination" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
 layout_direction = 3
 layout_mode = 2
 theme_override_constants/separation = 12
