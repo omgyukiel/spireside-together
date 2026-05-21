@@ -43,7 +43,7 @@ public class SteamHostPublicLobbyPatch
         SteamMatchmaking.SetLobbyData(host.LobbyId.Value, SteamLobbyMetadata.DescriptionKey, description);
         SteamMatchmaking.SetLobbyData(host.LobbyId.Value, SteamLobbyMetadata.GameVersionKey, gameVersion);
         MainFile.Logger.Info($"Steam lobby set to public with game version metadata {gameVersion}.");
-        SpiresideLobbyUiScenes.ShowHostLobbyId(host.GetRawLobbyIdentifier());
+        PendingHostLobbyIdDisplay.Set(host.GetRawLobbyIdentifier());
 
         return result;
     }
