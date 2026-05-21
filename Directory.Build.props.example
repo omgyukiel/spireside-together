@@ -1,0 +1,39 @@
+<Project>
+    <PropertyGroup>
+        <!--
+        Local machine setup file.
+
+        Copy this file to Directory.Build.props and edit the paths for the machine
+        that will build or publish the mod:
+
+            cp Directory.Build.props.example Directory.Build.props
+
+        Directory.Build.props is intentionally gitignored because these paths are
+        different for each developer and each operating system.
+        -->
+
+        <!--
+        Required for `dotnet publish` when exporting SpiresideTogether.pck.
+        Use the Godot/MegaDot executable that matches the game's Godot version.
+
+        macOS examples:
+            /Applications/Godot_mono.app/Contents/MacOS/Godot
+            /Applications/MegaDot.app/Contents/MacOS/MegaDot
+
+        Windows example:
+            C:/megadot/MegaDot_v4.5.1-stable_mono_win64.exe
+        -->
+        <GodotPath>/path/to/Godot_or_MegaDot_executable</GodotPath>
+
+        <!--
+        Optional. Set this only if automatic Slay the Spire 2 path discovery fails.
+
+        macOS example:
+            /Users/you/Library/Application Support/Steam/steamapps/common/Slay the Spire 2
+
+        Windows example:
+            C:/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2
+        -->
+        <!-- <Sts2Path>/path/to/Slay the Spire 2</Sts2Path> -->
+    </PropertyGroup>
+</Project>

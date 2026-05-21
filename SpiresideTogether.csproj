@@ -57,7 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Condition="Exists('Directory.Build.props')" Include="Directory.Build.props"/>
+        <None Condition="Exists('Directory.Build.props')" Include="Directory.Build" />
         <None Include=".gitignore" />
         <None Include="SpiresideTogether.json" />
         <None Include="project.godot"/>

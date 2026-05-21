@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://c6bpisfr27fe6"]
+
+[node name="LobbyRow" type="HBoxContainer"]
+custom_minimum_size = Vector2(956, 42)
+offset_left = 67.0
+offset_top = 143.0
+offset_right = 107.0
+offset_bottom = 183.0
+theme_override_constants/separation = 8
+
+[node name="HostNameLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Yukiel"
+
+[node name="DescriptionLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "123456789012345678901234567890123456789012345678901234567"
+
+[node name="VersionLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "v0.123"
+
+[node name="PlayersLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "1/4"
+
+[node name="JoinButton" type="Button" parent="."]
+custom_minimum_size = Vector2(80, 34)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 4
+text = "Join"
