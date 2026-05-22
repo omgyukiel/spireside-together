@@ -13,9 +13,9 @@
     },
     {
       "id": "lemonSpire2",
-      "min_version": "v0.7.0"
+      "min_version": "v0.7.4"
     }
   ],
   "affects_gameplay": true,
-  "min_game_version": "0.103.2"
+  "min_game_version": "0.105.0"
 }
