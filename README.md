@@ -2,8 +2,12 @@
 
 Spireside Together is a Slay the Spire 2 mod that enables public multiplayer with strangers by enabling hosts to create public lobbies and guests to search with a server browser.
 
+**NOTE: Public lobbies can only be created and discovered by those with this mod or similaar**
+
 For installation instructions, please scroll down to the installation instructions below! Kindly report any issues or post discussion [here](https://github.com/omgyukiel/spireside-together/issues). 
 
+
+<img src="./docs/server-browser-join.gif" width="800" height="600" />
 ## Features
 This mod adds a server browser that can search up to 100 public lobbies with filtering by hostname, description, or game version.
 
@@ -28,7 +32,7 @@ You must be running v0.105.0 or higher for STS2 to run lemonSpire2. You cannot j
 
 ### Review the compatability section of this README
 
-### 1. Update your STS2 to use the beta-branach (temporary)
+### 1. Update your STS2 to use the beta-branch (temporary)
 This mod depends on lemonSpire2 so strangers can chat and communicate with eachother. lemonSpire2 requires your base game vesion to be >= v0.105.0.
 
 As of 5/21/2026, this version is only available on the beta branch, when it is officially released this step will be removed.
