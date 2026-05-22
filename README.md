@@ -34,7 +34,7 @@ It may be possible that truly client-side only mods could work but this behavior
 <img src="./docs/server-browser.png" width="800" height="600" />
 
 ### 0. Review the compatability section and backup your mods
-To gaurantee compatability, players must use the same mods and mod versions. Difference in mod versions that result in gameplay changes will causes the game to hang on a black screen when connecting.
+To guarantee compatibility, players must use the same mods and mod versions. Difference in mod versions that result in gameplay changes will causes the game to hang on a black screen when connecting.
 
 **If you already have mods, I suggest backing them up somewhere for public multiplayer.**
 
@@ -58,7 +58,7 @@ We will remove RitsuLib to reduce the chance that players have different mod ver
 1. Delete RitsuLib from the mods folder if you downloaded it already
 2. Open the `lemonSpire2.json` in your `mods/lemonSpire2`
 
-Remove RitsuLib from dependenciess and save the file. `lemonSpire2.json` should look like this:
+Remove RitsuLib from dependencies and save the file. `lemonSpire2.json` should look like this:
 ```json
 {
   "id": "lemonSpire2",
