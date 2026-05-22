@@ -20,7 +20,7 @@ Guests can join directly by lobby ids or connect to lobbies found in the server 
 ## Dependencies
 This mod inherits from BaseLib and depends on lemonSpire2 for chat support:
 - [BaseLib-StS2](https://github.com/Alchyr/BaseLib-StS2/releases/tag/v3.1.4) == v3.1.4
-- [lemonSpire2](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.0) == v0.7.4
+- [lemonSpire2](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.4) == v0.7.4
 - Slay the Spire 2 >= v0.105.0 (Currently on beta branch) 
 
 ## Compatability
