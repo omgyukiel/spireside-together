@@ -6,9 +6,9 @@ Spireside Together is a Slay the Spire 2 mod that enables public multiplayer wit
 
 For installation instructions, please scroll down to the installation instructions below! Kindly report any issues or post discussion [here](https://github.com/omgyukiel/spireside-together/issues). 
 
-
-<img src="./docs/server-browser-join.gif" width="800" height="600" />
 ## Features
+<img src="./docs/server-browser-join.gif" width="800" height="600" />
+
 This mod adds a server browser that can search up to 100 public lobbies with filtering by hostname, description, or game version.
 
 Hosts can create public lobbies from the Spireside Together Multiplayer menu and copy their lobby ids.
@@ -18,7 +18,7 @@ Guests can join directly by lobby ids or connect to lobbies found in the server 
 **Known Issue: Currently there is no support for reconnects when a player disconnects. This may unfortunately hang the game.**
 
 ## Dependencies
-This mod inheritss from BaseLib aand depends on lemonSpire2 for chat support:
+This mod inherits from BaseLib and depends on lemonSpire2 for chat support:
 - [BaseLib-StS2](https://github.com/Alchyr/BaseLib-StS2/releases/tag/v3.1.4) == v3.1.4
 - [lemonSpire2](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.0) == v0.7.0
 - NOT SUPPORTED: Slay the Spire 2 beta branch
@@ -26,11 +26,12 @@ This mod inheritss from BaseLib aand depends on lemonSpire2 for chat support:
 ## Compatability
 You cannot join lobbies with conflicting base game versions.
 
-**To reduce the risk of error, you must use the exact mod versions listed and follow the exact install steps to gaurantee compatability. Mismatched mods and mod versions can cause the game to hang on black screens.**
+**To reduce the risk of error, you must use the exact mod versions listed and follow the exact install steps to guarantee compatibility. Mismatched mods and mod versions can cause the game to hang on black screens.**
 
-It may be possible that truely client-side only mods could work but this behavior is untested.
+It may be possible that truly client-side only mods could work but this behavior is untested.
 
 ## Installation
+<img src="./docs/server-browser.png" width="800" height="600" />
 
 ### 0. Review the compatability section and backup your mods
 To gaurantee compatability, players must use the same mods and mod versions. Difference in mod versions that result in gameplay changes will causes the game to hang on a black screen when connecting.
