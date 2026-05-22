@@ -15,7 +15,7 @@ Guests can join directly by lobby ids or connect to lobbies found in the server 
 
 ## Dependencies
 This mod inheritss from BaseLib aand depends on lemonSpire2 for chat support:
-- [BaseLib-StS2](https://github.com/Alchyr/BaseLib-StS2)
+- [BaseLib-StS2](https://github.com/Alchyr/BaseLib-StS2/releases) >= v3.1.2
 - [lemonSpire2](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.4) >= v0.7.4
 - [RitsuLib](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.2.40)
 - Slay the Spire 2 >= v0.105.0 (as of 05/21/2026 is on the beta branch)
@@ -39,17 +39,16 @@ To update your game:
 ### 2. Download dependencies
 This mod uses lemonSpire2 and RitsuLib for chat, and inherits from BaseLib.
 
-Download lemonSpire2, RitsuLib, and BaseLib zip files from github (reccomended) or nexusmods. 
+1. Download lemonSpire2, RitsuLib, and BaseLib zip files from github (reccomended) or nexusmods. 
 2. Extract the zip folders into the mods folder at your STS2 install location: `*\steamapps\common\Slay the Spire 2\mods`
    3. You can find your install folder by right clicking STS2 in your Steam library, clicking properties, then click "Browse" in "Installed Files."
    4. Create the "mods" folder if it does not exist yet
 
-**BaseLib-StS2** [github](https://github.com/Alchyr/BaseLib-StS2) [nexusmods](https://www.nexusmods.com/slaythespire2/mods/103?tab=description)
-
-**lemonSpire2:** [github](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.4)
+#### Download Links:
+- **BaseLib-StS2** [github](https://github.com/Alchyr/BaseLib-StS2/releases) [nexusmods](https://www.nexusmods.com/slaythespire2/mods/103?tab=description)
+- **lemonSpire2:** [github](https://github.com/freude916/lemonSpire2/releases/tag/v0.7.4)
 [nexusmods](https://www.nexusmods.com/slaythespire2/mods/29?tab=description)
-
-**RitsuLib:**
+- **RitsuLib:**
 [github](https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.2.40)
 [nexusmods](https://www.nexusmods.com/slaythespire2/mods/137?tab=description)
 
@@ -59,7 +58,7 @@ Download lemonSpire2, RitsuLib, and BaseLib zip files from github (reccomended) 
 3. Launch the game and you should see a new menu option!
       4. If this is your first time using mods your game may shutdown on the first launch
 ### 4. (Optional) Sync vanilla saves with modded
-If this is your first time using mods you may think you haev corrupted your saves files, but STS2 just points to a different folder for modded play throughs!
+If this is your first time using mods you may think you have corrupted your saves files, but STS2 just points to a different folder for modded play throughs!
 
 You can find mods to sync vanilla gamess like [this](https://www.nexusmods.com/slaythespire2/mods/372) or manually copy your vanilla saves to your modded by doing the following:
 1. Open STS2
